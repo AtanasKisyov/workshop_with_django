@@ -3,7 +3,6 @@ from workshop.secret_key import SECRET_KEY as SK
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# This is not supposed to be here, I know. The repo is for learning purposes
 SECRET_KEY = SK
 
 DEBUG = True
