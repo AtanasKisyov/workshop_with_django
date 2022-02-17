@@ -13,6 +13,8 @@ def home(request):
 
 def dashboard(request):
     user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     photos = Photo.objects.filter(
         tagged_pets__owner=user,
     ).distinct()
@@ -20,3 +22,7 @@ def dashboard(request):
         'photos': photos,
     }
     return render(request, 'dashboard.html', context)
+
+
+def unauthorized(request):
+    return render(request, '401_error.html')

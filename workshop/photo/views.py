@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect
 
+from workshop.helpers.is_logged_in import is_logged_in
+from workshop.main.views import unauthorized
 from workshop.photo.forms import CreatePhoto, EditPhoto, DeletePhoto
 from workshop.photo.models import Photo
 
 
 def photo_details(request, pk):
+    user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     photo = Photo.objects.get(pk=pk)
     context = {
         'photo': photo,
@@ -13,6 +18,9 @@ def photo_details(request, pk):
 
 
 def like_photo(request, pk):
+    user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     photo = Photo.objects.get(pk=pk)
     photo.likes += 1
     photo.save()
@@ -37,10 +45,16 @@ def photo_actions(request, form_class, success_url, instance, template):
 
 
 def create_photo(request):
+    user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     return photo_actions(request, CreatePhoto, 'dashboard', Photo(), 'photo_create.html')
 
 
 def edit_photo(request, pk):
+    user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     photo = Photo.objects.get(pk=pk)
     if request.method == 'POST':
         form = EditPhoto(request.POST, request.FILES, instance=photo)
@@ -58,6 +72,9 @@ def edit_photo(request, pk):
 
 
 def delete_photo(request, pk):
+    user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     photo = Photo.objects.get(pk=pk)
     photo_form = DeletePhoto(request.POST, request.FILES, instance=photo)
     photo_form.save()

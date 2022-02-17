@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from workshop.main.views import is_logged_in
+from workshop.main.views import is_logged_in, unauthorized
 from workshop.pet.models import Pet
 from workshop.photo.models import Photo
 from workshop.user_profile.forms import CreateProfile, EditProfile, DeleteProfile
@@ -23,6 +23,8 @@ def profile_action(request, form_class, success_url, instance, template):
 
 def profile_details(request):
     user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     user_photos = Photo.objects.filter(tagged_pets__owner=user).distinct()
     pictures_count = user_photos.count()
     pets = Pet.objects.filter(owner=user)
@@ -42,9 +44,13 @@ def profile_create(request):
 
 def profile_edit(request):
     user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     return profile_action(request, EditProfile, 'profile_details', user, 'profile_edit.html')
 
 
 def profile_delete(request):
     user = is_logged_in()
+    if not user:
+        return unauthorized(request)
     return profile_action(request, DeleteProfile, 'home', user, 'profile_delete.html')
